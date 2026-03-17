@@ -13,37 +13,85 @@
 
 <div class="row">
     <div class="col-md-8">
-        <div class="card mb-3">
-            <div class="card-header"><h5 class="mb-0">Project Information</h5></div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Project Information</h5>
+            </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6 mb-2"><strong>Name:</strong><br>{{ $project->name }}</div>
-                    <div class="col-md-6 mb-2"><strong>Code:</strong><br>{{ $project->code }}</div>
-                    <div class="col-md-6 mb-2"><strong>Cost Center:</strong><br>{{ $project->costCenter->name ?? '-' }}</div>
-                    <div class="col-md-6 mb-2">
-                        <strong>Status:</strong><br>
-                        @php
-                            $statusColors = ['ACTIVE' => 'success', 'COMPLETED' => 'primary', 'ON_HOLD' => 'warning', 'CANCELLED' => 'danger'];
-                        @endphp
-                        <span class="badge bg-{{ $statusColors[$project->status] ?? 'secondary' }}">{{ $project->status ?? '-' }}</span>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted fw-semibold">Name</label>
+                        <p class="mb-0">{{ $project->name }}</p>
                     </div>
-                    <div class="col-md-4 mb-2"><strong>Start Date:</strong><br>{{ $project->start_date?->format('Y-m-d') ?? '-' }}</div>
-                    <div class="col-md-4 mb-2"><strong>End Date:</strong><br>{{ $project->end_date?->format('Y-m-d') ?? '-' }}</div>
-                    <div class="col-md-4 mb-2"><strong>Budget:</strong><br>{{ number_format($project->budget ?? 0, 2) }}</div>
-                    <div class="col-12 mb-2"><strong>Description:</strong><br>{{ $project->description ?? '-' }}</div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted fw-semibold">Code</label>
+                        <p class="mb-0">{{ $project->code ?? '-' }}</p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label text-muted fw-semibold">Description</label>
+                        <p class="mb-0">{{ $project->description ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted fw-semibold">Cost Center</label>
+                        <p class="mb-0">{{ $project->costCenter->name ?? '-' }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted fw-semibold">Budget</label>
+                        <p class="mb-0">{{ number_format($project->budget ?? 0, 2) }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted fw-semibold">Start Date</label>
+                        <p class="mb-0">{{ $project->start_date ? \Carbon\Carbon::parse($project->start_date)->format('d M Y') : '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted fw-semibold">End Date</label>
+                        <p class="mb-0">{{ $project->end_date ? \Carbon\Carbon::parse($project->end_date)->format('d M Y') : '-' }}</p>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-muted fw-semibold">Status</label>
+                        <p class="mb-0">
+                            @php
+                                $statusColors = [
+                                    'PLANNED' => 'secondary',
+                                    'IN_PROGRESS' => 'primary',
+                                    'ON_HOLD' => 'warning',
+                                    'COMPLETED' => 'success',
+                                    'CANCELLED' => 'danger',
+                                ];
+                            @endphp
+                            <span class="badge bg-{{ $statusColors[$project->status] ?? 'secondary' }}">{{ str_replace('_', ' ', $project->status ?? 'N/A') }}</span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-header"><h5 class="mb-0">Financial Summary</h5></div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Summary</h5>
+            </div>
             <div class="card-body">
-                <div class="mb-2"><strong>Budget:</strong> {{ number_format($project->budget ?? 0, 2) }}</div>
-                <div class="mb-2"><strong>Total Income:</strong> {{ number_format($totalIncome ?? 0, 2) }}</div>
-                <div class="mb-2"><strong>Total Expense:</strong> {{ number_format($totalExpense ?? 0, 2) }}</div>
-                <hr>
-                <div class="mb-2"><strong>Remaining Budget:</strong> {{ number_format(($project->budget ?? 0) - ($totalExpense ?? 0), 2) }}</div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Created</span>
+                        <span>{{ $project->created_at ? $project->created_at->format('d M Y') : '-' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Last Updated</span>
+                        <span>{{ $project->updated_at ? $project->updated_at->format('d M Y') : '-' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Budget</span>
+                        <span class="fw-bold">{{ number_format($project->budget ?? 0, 2) }}</span>
+                    </li>
+                    @if($project->start_date && $project->end_date)
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Duration</span>
+                        <span>{{ \Carbon\Carbon::parse($project->start_date)->diffInDays(\Carbon\Carbon::parse($project->end_date)) }} days</span>
+                    </li>
+                    @endif
+                </ul>
             </div>
         </div>
     </div>
